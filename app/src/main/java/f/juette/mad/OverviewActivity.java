@@ -30,19 +30,8 @@ public class OverviewActivity extends AppCompatActivity {
         selectContactButton = (Button) findViewById(R.id.select_contact_button);
 
         // Actions with the elements
-        callDetailviewButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                callDetailviewActivity();
-            }
-        });
-
-        selectContactButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectContact();
-            }
-        });
+        callDetailviewButton.setOnClickListener(v -> callDetailviewActivity());
+        selectContactButton.setOnClickListener(v -> selectContact());
 
         // Set values/content on elements
         welcomeText.setText(R.string.welcome2);
@@ -59,7 +48,6 @@ public class OverviewActivity extends AppCompatActivity {
         callDetailviewIntent.putExtra("calltime", calltime);
 
         // Open the DetailviewActivity
-        startActivity(callDetailviewIntent);
         startActivityForResult(callDetailviewIntent, 0);
     }
 

@@ -19,12 +19,7 @@ public class DetailviewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detailview);
 
         callbackButton = (Button) findViewById(R.id.callback_button);
-        callbackButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                callbackCaller();
-            }
-        });
+        callbackButton.setOnClickListener(v -> callbackCaller());
 
         // Get the data from the OverviewActivity
         long calltime = getIntent().getLongExtra("calltime", -1);
