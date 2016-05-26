@@ -10,11 +10,14 @@
     tools:context="f.juette.mad.OverviewActivity">
 
     <TextView
+        android:id="@+id/welcome_text"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Hello World!"
-        android:id="@+id/textView"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/call_detailview_button"
+        android:layout_below="@+id/welcome_text"
+        android:text="@string/action_call_detailview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 </RelativeLayout>
