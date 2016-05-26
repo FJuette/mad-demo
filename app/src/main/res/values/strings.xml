@@ -3,4 +3,6 @@
     <string name="welcome">Hello Android user</string>
     <string name="welcome2">Hello New Android user</string>
     <string name="action_call_detailview">Call</string>
+    <string name="detailview_label">Detailview</string>
+    <string name="action_callback">Callback</string>
 </resources>

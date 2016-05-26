@@ -20,4 +20,10 @@
         android:text="@string/action_call_detailview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/listview"
+        android:layout_below="@id/call_detailview_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 </RelativeLayout>
