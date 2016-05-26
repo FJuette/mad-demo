@@ -26,4 +26,11 @@
         android:layout_below="@id/call_detailview_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/select_contact_button"
+        android:layout_alignParentBottom="true"
+        android:text="@string/label_kontakte"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 </RelativeLayout>
