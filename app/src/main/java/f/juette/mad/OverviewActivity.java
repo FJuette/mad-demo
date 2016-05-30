@@ -13,6 +13,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import f.juette.mad.model.DataItem;
+import f.juette.mad.model.IDataItemCRUDOperations;
+import f.juette.mad.model.impl.SQLiteDataItemCRUDOperationsImpl;
 
 public class OverviewActivity extends AppCompatActivity {
 
@@ -21,6 +23,7 @@ public class OverviewActivity extends AppCompatActivity {
     private ViewGroup listview;
     private Button selectContactButton;
     private ProgressDialog progressDialog;
+    private IDataItemCRUDOperations crudops;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +40,8 @@ public class OverviewActivity extends AppCompatActivity {
         // Actions with the elements
         callDetailviewButton.setOnClickListener(v -> callDetailviewActivity());
         selectContactButton.setOnClickListener(v -> selectContact());
+
+        crudops = new SQLiteDataItemCRUDOperationsImpl(this);
 
         // Set values/content on elements
         welcomeText.setText(R.string.welcome2);
@@ -113,12 +118,13 @@ public class OverviewActivity extends AppCompatActivity {
     }
 
     private DataItem createDataItem(DataItem item) {
-        // TODO Returns the dataitem with the id from the database
+        item = crudops.createDataItem(item);
         try {
-            Thread.sleep(3000);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        Log.d("OverviewActivity", item.toString());
         return item;
     }
 

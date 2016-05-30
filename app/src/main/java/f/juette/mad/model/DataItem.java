@@ -1,17 +1,26 @@
 package f.juette.mad.model;
 
-import android.provider.ContactsContract;
-
-/**
- * Created by sievers on 30.05.16.
- */
 public class DataItem {
+
+    private long id;
     private String name;
     private long delay;
+
+    public DataItem() {
+
+    }
 
     public DataItem(String name, long delay) {
         this.name = name;
         this.delay = delay;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -33,7 +42,8 @@ public class DataItem {
     @Override
     public String toString() {
         return "DataItem{" +
-                "name: '" + name + '\'' +
+                "id: " + id +
+                ", name: '" + name + '\'' +
                 ", delay: " + delay +
                 "}";
     }
