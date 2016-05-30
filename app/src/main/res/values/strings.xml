@@ -6,4 +6,6 @@
     <string name="detailview_label">Detailview</string>
     <string name="action_callback">Callback</string>
     <string name="label_kontakte">Kontakte</string>
+    <string name="detailview_itemname_errormsg">"Invalid input: %s"</string>
+    <string name="detailview_itemname_hint">Item Name</string>
 </resources>
