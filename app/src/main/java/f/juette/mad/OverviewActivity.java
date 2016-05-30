@@ -1,7 +1,9 @@
 package f.juette.mad;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +20,7 @@ public class OverviewActivity extends AppCompatActivity {
     private Button callDetailviewButton;
     private ViewGroup listview;
     private Button selectContactButton;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +32,7 @@ public class OverviewActivity extends AppCompatActivity {
         callDetailviewButton = (Button) findViewById(R.id.call_detailview_button);
         listview = (ViewGroup) findViewById(R.id.listview);
         selectContactButton = (Button) findViewById(R.id.select_contact_button);
+        progressDialog = new ProgressDialog(this);
 
         // Actions with the elements
         callDetailviewButton.setOnClickListener(v -> callDetailviewActivity());
@@ -79,15 +83,33 @@ public class OverviewActivity extends AppCompatActivity {
         Log.i("OverviewActivity", "dataitem: " + item);
 
         // Runnable in thread with lambda
-        new Thread(() -> {
+        /*new Thread(() -> {
             final DataItem createdItem = createDataItem(item);
-            Log.i("OverviewActivity", "data item created");
             runOnUiThread(() -> {
                 addDataItemToListView(createdItem);
-                Log.i("OverviewActivity", "data item added to list");
             });
-        }).start();
-        Log.i("OverviewActivity", "createAndShowDataItem() done");
+        }).start();*/
+
+        // Same function as the thread but more readable
+        // 1. type of parameter, 2. datatype during run, 3. return type
+        new AsyncTask<DataItem, Void, DataItem>() {
+
+            @Override
+            protected void onPreExecute() {
+                progressDialog.show();
+            }
+
+            @Override
+            protected DataItem doInBackground(DataItem... params) {
+                return createDataItem(params[0]);
+            }
+
+            @Override
+            protected void onPostExecute(DataItem dataItem) {
+                addDataItemToListView(dataItem);
+                progressDialog.hide();
+            }
+        }.execute(item);
     }
 
     private DataItem createDataItem(DataItem item) {
@@ -107,5 +129,11 @@ public class OverviewActivity extends AppCompatActivity {
 
         listview.addView(listitemView);
         // listview.setText(listview.getText().toString() + "\n" + calldelay + " -- " + itemname);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        progressDialog.dismiss();
     }
 }
