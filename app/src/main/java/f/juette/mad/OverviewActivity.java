@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.List;
+
 import f.juette.mad.model.DataItem;
 import f.juette.mad.model.IDataItemCRUDOperations;
 import f.juette.mad.model.impl.SQLiteDataItemCRUDOperationsImpl;
@@ -45,6 +47,38 @@ public class OverviewActivity extends AppCompatActivity {
 
         // Set values/content on elements
         welcomeText.setText(R.string.welcome2);
+
+        readItemsAndFillListView();
+    }
+
+    private void readItemsAndFillListView() {
+
+        new AsyncTask<Void, Void, List<DataItem>>() {
+
+            @Override
+            protected void onPreExecute() {
+                progressDialog.show();
+            }
+
+            @Override
+            protected List<DataItem> doInBackground(Void... params) {
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return crudops.readAllDataItems();
+            }
+
+            @Override
+            protected void onPostExecute(List<DataItem> dataItems) {
+                for (DataItem item : dataItems) {
+                    addDataItemToListView(item);
+                }
+                progressDialog.hide();
+            }
+        }.execute();
+
     }
 
     private void callDetailviewActivity() {

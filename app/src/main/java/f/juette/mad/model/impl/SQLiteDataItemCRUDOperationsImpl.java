@@ -9,6 +9,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.StringTokenizer;
 
 import f.juette.mad.model.DataItem;
 import f.juette.mad.model.IDataItemCRUDOperations;
@@ -68,26 +69,37 @@ public class SQLiteDataItemCRUDOperationsImpl implements IDataItemCRUDOperations
     @Override
     public List<DataItem> readAllDataItems() {
         Log.i(logger, "readAllDataItems()");
-		/*
-		 * declare a list of items that will keep the values read out from the
-		 * db
-		 */
+
         List<DataItem> items = new ArrayList<DataItem>();
 
 		/*
 		 * declare the columns to be read out (id, name and expired) as a String
 		 * array
 		 */
+        String[] columns = new String[] {COL_NAME, COL_DELAY, COL_ID};
 
 		/* declare an ASC ordering for the id column */
 
 		/* query the db taking a cursor as return value */
+        Cursor cursor = db.query(TABNAME, columns, null, null, null, null, COL_ID + " ASC");
 
 		/* use the cursor, moving to the first dataset */
+        cursor.moveToFirst();
 
 		/* iterate as long as we have reached the end */
+        while (!cursor.isAfterLast()) {
 			/* create an item from the current cursor position */
+            DataItem item = new DataItem();
+            item.setName(cursor.getString(cursor.getColumnIndex(COL_NAME)));
+            item.setDelay(cursor.getLong(cursor.getColumnIndex(COL_DELAY)));
+            item.setId(cursor.getLong(cursor.getColumnIndex(COL_ID)));
+            items.add(item);
+            Log.i(logger, "created DataItem: " + item);
+
 			/* move the cursor to the next item */
+            cursor.moveToNext();
+        }
+        Log.i(logger, "created DataItems: " + items);
 
 		/* return the items */
         return items;
