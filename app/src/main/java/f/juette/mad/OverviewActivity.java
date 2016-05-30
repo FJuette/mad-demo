@@ -2,15 +2,15 @@ package f.juette.mad;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import f.juette.mad.model.DataItem;
 
 public class OverviewActivity extends AppCompatActivity {
 
@@ -64,18 +64,48 @@ public class OverviewActivity extends AppCompatActivity {
             // Return value from the DetailviewActivity
             long calldelay = data.getLongExtra("calldelay", -1);
             String itemname = data.getStringExtra("itemname");
-            Log.i("OverviewActivity", "calldelay: " + calldelay);
 
-            ViewGroup listitemView = (ViewGroup) getLayoutInflater().inflate(R.layout.overview_listitem, listview, false);
-            TextView itemNameText = (TextView) listitemView.findViewById(R.id.item_name);
-            itemNameText.setText(calldelay + " -- " + itemname);
+            DataItem newItem = new DataItem(itemname, calldelay);
+            createAndShowNewDataItem(newItem);
 
-            listview.addView(listitemView);
-            // listview.setText(listview.getText().toString() + "\n" + calldelay + " -- " + itemname);
         }
         else if (requestCode == 1) {
             Log.i("OverviewActivity", "contact pick intent: " + data);
         }
 
+    }
+
+    private void createAndShowNewDataItem(final DataItem item) {
+        Log.i("OverviewActivity", "dataitem: " + item);
+
+        // Runnable in thread with lambda
+        new Thread(() -> {
+            final DataItem createdItem = createDataItem(item);
+            Log.i("OverviewActivity", "data item created");
+            runOnUiThread(() -> {
+                addDataItemToListView(createdItem);
+                Log.i("OverviewActivity", "data item added to list");
+            });
+        }).start();
+        Log.i("OverviewActivity", "createAndShowDataItem() done");
+    }
+
+    private DataItem createDataItem(DataItem item) {
+        // TODO Returns the dataitem with the id from the database
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return item;
+    }
+
+    private void addDataItemToListView(DataItem item) {
+        ViewGroup listitemView = (ViewGroup) getLayoutInflater().inflate(R.layout.overview_listitem, listview, false);
+        TextView itemNameText = (TextView) listitemView.findViewById(R.id.item_name);
+        itemNameText.setText(item.getDelay() + " -- " + item.getName());
+
+        listview.addView(listitemView);
+        // listview.setText(listview.getText().toString() + "\n" + calldelay + " -- " + itemname);
     }
 }
