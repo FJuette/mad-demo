@@ -58,6 +58,7 @@ public class DetailviewActivity extends AppCompatActivity {
         // Log.i("DetailviewActivity", "callback: " + calldelay);
         Intent returnIntent = new Intent();
         returnIntent.putExtra("calldelay", calldelay);
+        returnIntent.putExtra("itemname", itemNameText.getText().toString());
 
         // Data back to the Overview activity
         setResult(Activity.RESULT_OK, returnIntent);

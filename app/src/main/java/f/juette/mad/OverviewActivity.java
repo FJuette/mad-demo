@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,7 +16,7 @@ public class OverviewActivity extends AppCompatActivity {
 
     private TextView welcomeText;
     private Button callDetailviewButton;
-    private TextView listview;
+    private ViewGroup listview;
     private Button selectContactButton;
 
     @Override
@@ -26,7 +27,7 @@ public class OverviewActivity extends AppCompatActivity {
         // Read the view elements
         welcomeText = (TextView) findViewById(R.id.welcome_text);
         callDetailviewButton = (Button) findViewById(R.id.call_detailview_button);
-        listview = (TextView) findViewById(R.id.listview);
+        listview = (ViewGroup) findViewById(R.id.listview);
         selectContactButton = (Button) findViewById(R.id.select_contact_button);
 
         // Actions with the elements
@@ -62,9 +63,15 @@ public class OverviewActivity extends AppCompatActivity {
         if (requestCode == 0 && resultCode == Activity.RESULT_OK) {
             // Return value from the DetailviewActivity
             long calldelay = data.getLongExtra("calldelay", -1);
+            String itemname = data.getStringExtra("itemname");
             Log.i("OverviewActivity", "calldelay: " + calldelay);
 
-            listview.setText(listview.getText().toString() + "\n" + calldelay);
+            ViewGroup listitemView = (ViewGroup) getLayoutInflater().inflate(R.layout.overview_listitem, listview, false);
+            TextView itemNameText = (TextView) listitemView.findViewById(R.id.item_name);
+            itemNameText.setText(calldelay + " -- " + itemname);
+
+            listview.addView(listitemView);
+            // listview.setText(listview.getText().toString() + "\n" + calldelay + " -- " + itemname);
         }
         else if (requestCode == 1) {
             Log.i("OverviewActivity", "contact pick intent: " + data);
