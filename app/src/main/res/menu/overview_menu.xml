@@ -7,8 +7,18 @@
         android:icon="@drawable/ic_add_white_24dp"
         app:showAsAction="always" />
 
-    <item android:id="@+id/addContactAction"
-        android:title="Add Contact"
-        android:icon="@drawable/ic_contacts_white_24dp" />
+    <item android:id="@+id/empty"
+        android:icon="@drawable/ic_more_vert_white_24dp"
+        android:orderInCategory="101"
+        app:showAsAction="always"
+        android:title="">
+
+        <menu>
+            <item android:id="@+id/addContactAction"
+                android:title="Add Contact"
+                app:showAsAction="never"
+                android:icon="@drawable/ic_contacts_black_24dp" />
+        </menu>
+    </item>
 
 </menu>
