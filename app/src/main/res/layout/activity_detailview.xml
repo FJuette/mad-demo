@@ -13,8 +13,8 @@
     <TextView
         android:text="@string/detailview_label"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        tools:ignore="Suspicious0dp" />
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
 
     <EditText
         android:id="@+id/item_name_text"
@@ -29,5 +29,6 @@
         android:enabled="false"
         android:text="@string/action_callback"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
 </LinearLayout>
