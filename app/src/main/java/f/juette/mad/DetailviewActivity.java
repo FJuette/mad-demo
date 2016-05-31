@@ -11,6 +11,8 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 
+import f.juette.mad.model.impl.DataItem;
+
 public class DetailviewActivity extends AppCompatActivity {
 
     private Button saveItemButton;
@@ -42,6 +44,11 @@ public class DetailviewActivity extends AppCompatActivity {
         // Get the data from the OverviewActivity
         long calltime = getIntent().getLongExtra("calltime", -1);
         Log.i("DetailviewActivity", "calltime: " + calltime);
+
+        DataItem itemToEdit = (DataItem) getIntent().getSerializableExtra("editDataItem");
+        if (itemToEdit != null) {
+            itemNameText.setText(itemToEdit.getName());
+        }
 
         calldelay = System.currentTimeMillis() - calltime;
     }

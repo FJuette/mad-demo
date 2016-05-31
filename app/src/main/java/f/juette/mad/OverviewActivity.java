@@ -8,15 +8,22 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import f.juette.mad.model.DataItem;
+import f.juette.mad.model.impl.DataItem;
 import f.juette.mad.model.IDataItemCRUDOperations;
 import f.juette.mad.model.impl.SQLiteDataItemCRUDOperationsImpl;
 
@@ -27,6 +34,9 @@ public class OverviewActivity extends AppCompatActivity {
     private ViewGroup listview;
     private Button selectContactButton;
     private ProgressDialog progressDialog;
+
+    private ArrayAdapter<DataItem> adapter;
+
     private IDataItemCRUDOperations crudops;
 
     @Override
@@ -41,9 +51,20 @@ public class OverviewActivity extends AppCompatActivity {
         selectContactButton = (Button) findViewById(R.id.select_contact_button);
         progressDialog = new ProgressDialog(this);
 
+        adapter = new ArrayAdapter<DataItem>(this, R.layout.overview_listitem_simple, new ArrayList<DataItem>());
+        ((ListView)listview).setAdapter(adapter);
+
         // Actions with the elements
-        callDetailviewButton.setOnClickListener(v -> callDetailviewActivity());
+        callDetailviewButton.setOnClickListener(v -> createNewItem());
         selectContactButton.setOnClickListener(v -> selectContact());
+
+        ((ListView)listview).setOnItemClickListener((parent, view, position, id) -> {
+            DataItem selectedItem = adapter.getItem(position);
+            // Toast.makeText(OverviewActivity.this, "selectedItem: " + selectedItem.getName(), Toast.LENGTH_SHORT).show();
+            showItemDetails(selectedItem);
+        });
+
+        registerForContextMenu(listview);
 
         crudops = new SQLiteDataItemCRUDOperationsImpl(this);
 
@@ -83,7 +104,7 @@ public class OverviewActivity extends AppCompatActivity {
 
     }
 
-    private void callDetailviewActivity() {
+    private void createNewItem() {
         // Toast.makeText(OverviewActivity.this, "OnClick on Call!", Toast.LENGTH_SHORT).show();
         long calltime = System.currentTimeMillis();
 
@@ -95,6 +116,14 @@ public class OverviewActivity extends AppCompatActivity {
 
         // Open the DetailviewActivity
         startActivityForResult(callDetailviewIntent, 0);
+    }
+
+    private void showItemDetails(DataItem item) {
+
+        Intent callDetailviewIntent = new Intent(this, DetailviewActivity.class);
+        callDetailviewIntent.putExtra("editDataItem", item);
+
+        startActivityForResult(callDetailviewIntent, 1);
     }
 
     private void selectContact() {
@@ -165,18 +194,24 @@ public class OverviewActivity extends AppCompatActivity {
     }
 
     private void addDataItemToListView(DataItem item) {
-        ViewGroup listitemView = (ViewGroup) getLayoutInflater().inflate(R.layout.overview_listitem, listview, false);
-        TextView itemNameText = (TextView) listitemView.findViewById(R.id.item_name);
-        itemNameText.setText(item.getDelay() + " -- " + item.getName());
+        // ViewGroup listitemView = (ViewGroup) getLayoutInflater().inflate(R.layout.overview_listitem, listview, false);
+        // TextView itemNameText = (TextView) listitemView.findViewById(R.id.item_name);
+        // itemNameText.setText(item.getDelay() + " -- " + item.getName());
 
-        listview.addView(listitemView);
+        // listview.addView(listitemView);
         // listview.setText(listview.getText().toString() + "\n" + calldelay + " -- " + itemname);
+        adapter.add(item);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.overview_menu, menu);
         return true;
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        getMenuInflater().inflate(R.menu.overview_listview_contextmenu, menu);
     }
 
     @Override
@@ -188,10 +223,25 @@ public class OverviewActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.newItemAction) {
-            callDetailviewActivity();
+            createNewItem();
         }
         else if (item.getItemId() == R.id.addContactAction) {
             selectContact();
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+
+        DataItem selectedItem = adapter.getItem(((AdapterView.AdapterContextMenuInfo)item.getMenuInfo()).position);
+
+        if (item.getItemId() == R.id.deleteItemAction) {
+            Toast.makeText(OverviewActivity.this, "delete: " + selectedItem.getName(), Toast.LENGTH_SHORT).show();
+        }
+        else if (item.getItemId() == R.id.editItemAction) {
+            // Toast.makeText(OverviewActivity.this, "edit: " + selectedItem.getName(), Toast.LENGTH_SHORT).show();
+            showItemDetails(selectedItem);
         }
         return true;
     }

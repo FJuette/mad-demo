@@ -3,8 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin">
 
     <TextView
@@ -21,6 +19,8 @@
         android:layout_height="wrap_content"
         android:visibility="gone" />
 
+    <!--
+
     <ScrollView
         android:layout_below="@id/call_detailview_button"
         android:layout_width="match_parent"
@@ -32,6 +32,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </ScrollView>
+    -->
+
+    <ListView
+        android:id="@+id/listview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/call_detailview_button">
+
+    </ListView>
 
     <Button
         android:id="@+id/select_contact_button"

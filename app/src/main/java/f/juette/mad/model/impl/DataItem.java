@@ -1,6 +1,8 @@
-package f.juette.mad.model;
+package f.juette.mad.model.impl;
 
-public class DataItem {
+import java.io.Serializable;
+
+public class DataItem implements Serializable {
 
     private long id;
     private String name;

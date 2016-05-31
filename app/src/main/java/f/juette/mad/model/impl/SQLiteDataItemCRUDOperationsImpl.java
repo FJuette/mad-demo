@@ -9,9 +9,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.StringTokenizer;
 
-import f.juette.mad.model.DataItem;
 import f.juette.mad.model.IDataItemCRUDOperations;
 
 public class SQLiteDataItemCRUDOperationsImpl implements IDataItemCRUDOperations {
