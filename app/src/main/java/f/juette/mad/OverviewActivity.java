@@ -20,10 +20,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import f.juette.mad.model.impl.DataItem;
+import f.juette.mad.model.DataItem;
 import f.juette.mad.model.IDataItemCRUDOperations;
 import f.juette.mad.model.impl.SQLiteDataItemCRUDOperationsImpl;
 
@@ -39,6 +41,8 @@ public class OverviewActivity extends AppCompatActivity {
 
     private IDataItemCRUDOperations crudops;
 
+    private List<DataItem> dataItemObjects = new ArrayList<DataItem>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +55,26 @@ public class OverviewActivity extends AppCompatActivity {
         selectContactButton = (Button) findViewById(R.id.select_contact_button);
         progressDialog = new ProgressDialog(this);
 
-        adapter = new ArrayAdapter<DataItem>(this, R.layout.overview_listitem_simple, new ArrayList<DataItem>());
+        adapter = new ArrayAdapter<DataItem>(this,
+                R.layout.overview_listitem_advanced,
+                dataItemObjects) {
+
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View dataItemView = getLayoutInflater().inflate(
+                        R.layout.overview_listitem_advanced,
+                        parent, false);
+
+                DataItem dataItemToShow = adapter.getItem(position);
+                TextView nameTextView = (TextView) dataItemView.findViewById(R.id.item_name);
+                TextView delaytextView = (TextView) dataItemView.findViewById(R.id.item_delay);
+
+                nameTextView.setText(dataItemToShow.getName());
+                delaytextView.setText(String.valueOf(dataItemToShow.getDelay()));
+
+                return dataItemView;
+            }
+        };
         ((ListView)listview).setAdapter(adapter);
 
         // Actions with the elements
@@ -237,12 +260,27 @@ public class OverviewActivity extends AppCompatActivity {
         DataItem selectedItem = adapter.getItem(((AdapterView.AdapterContextMenuInfo)item.getMenuInfo()).position);
 
         if (item.getItemId() == R.id.deleteItemAction) {
-            Toast.makeText(OverviewActivity.this, "delete: " + selectedItem.getName(), Toast.LENGTH_SHORT).show();
+            // Toast.makeText(OverviewActivity.this, "delete: " + selectedItem.getName(), Toast.LENGTH_SHORT).show();
+            deleteDataItemAndUpdateListview(selectedItem);
         }
         else if (item.getItemId() == R.id.editItemAction) {
             // Toast.makeText(OverviewActivity.this, "edit: " + selectedItem.getName(), Toast.LENGTH_SHORT).show();
             showItemDetails(selectedItem);
         }
         return true;
+    }
+
+    private void deleteDataItemAndUpdateListview(DataItem itemToDelete) {
+        // remove the item from the database
+        if (crudops.deleteDataItem(itemToDelete.getId())) {
+            // Remove the item from the listview
+            // adapter.remove(itemToDelete);
+            dataItemObjects.remove(itemToDelete);
+            adapter.notifyDataSetChanged();
+        } else {
+            Toast.makeText(OverviewActivity.this,
+                    "Could not delete: " + itemToDelete.getName(),
+                    Toast.LENGTH_SHORT).show();
+        }
     }
 }

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import f.juette.mad.model.DataItem;
 import f.juette.mad.model.IDataItemCRUDOperations;
 
 public class SQLiteDataItemCRUDOperationsImpl implements IDataItemCRUDOperations {
@@ -134,23 +135,21 @@ public class SQLiteDataItemCRUDOperationsImpl implements IDataItemCRUDOperations
 //		return item;
 //	}
 //
-//	@Override
-//	public boolean deleteDataItem(long dataItemId) {
-//		Log.i(logger, "deleteDataItem(): " + dataItemId);
-//
-//		/*
-//		 * delete the item passing the prepared where clause and the item id as
-//		 * string, capture the return value indicating how many items have been
-//		 * deleted
-//		 */
-//
-//		/* check the return value from the deletion and return it */
-//		return false;
-//	}
+	@Override
+	public boolean deleteDataItem(long id) {
+		Log.i(logger, "deleteDataItem(): " + id);
 
-	/*
-	 * helper methods for ORM etc.
-	 */
+		/*
+		 * delete the item passing the prepared where clause and the item id as
+		 * string, capture the return value indicating how many items have been
+		 * deleted
+		 */
+        int numOfRows = db.delete(TABNAME, WHERE_IDENTIFY_ITEM, new String[]{ String.valueOf(id) });
+
+		/* check the return value from the deletion and return it */
+		return numOfRows > 0;
+	}
+
 
     /**
      * create a ContentValues object which can be passed to a db query

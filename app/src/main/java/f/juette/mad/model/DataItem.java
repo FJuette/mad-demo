@@ -1,4 +1,4 @@
-package f.juette.mad.model.impl;
+package f.juette.mad.model;
 
 import java.io.Serializable;
 

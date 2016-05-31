@@ -11,7 +11,7 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 
-import f.juette.mad.model.impl.DataItem;
+import f.juette.mad.model.DataItem;
 
 public class DetailviewActivity extends AppCompatActivity {
 
