@@ -43,6 +43,16 @@ public class OverviewActivity extends AppCompatActivity {
 
     private List<DataItem> dataItemObjects = new ArrayList<DataItem>();
 
+    private static class DataItemViewHolder {
+        public TextView itemNameText;
+        public TextView itemDelayText;
+
+        public DataItemViewHolder(TextView itemNameText, TextView itemDelayText) {
+            this.itemNameText = itemNameText;
+            this.itemDelayText = itemDelayText;
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,17 +70,35 @@ public class OverviewActivity extends AppCompatActivity {
                 dataItemObjects) {
 
             @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                View dataItemView = getLayoutInflater().inflate(
-                        R.layout.overview_listitem_advanced,
-                        parent, false);
+            public View getView(int position, View dataItemView, ViewGroup parent) {
+
+                DataItemViewHolder viewHolder;
+
+                // Reuse the view object
+                if (dataItemView != null) {
+                    Log.i("OverviewActivity", "got existing view for item at position " + position + ": " + dataItemView);
+                    viewHolder = (DataItemViewHolder) dataItemView.getTag(R.id.viewHolder);
+                    String moreInfo = (String) dataItemView.getTag(R.id.moreInfo);
+                    Log.i("OverviewActivity", "found view holder on view: " + viewHolder);
+                    Log.i("OverviewActivity", "found more info on view: " + moreInfo);
+                } else {
+                    Log.i("OverviewActivity", "create view at position " + position);
+                    dataItemView = getLayoutInflater().inflate(
+                            R.layout.overview_listitem_advanced,
+                            parent, false);
+
+                    TextView nameTextView = (TextView) dataItemView.findViewById(R.id.item_name);
+                    TextView delaytextView = (TextView) dataItemView.findViewById(R.id.item_delay);
+
+                    viewHolder = new DataItemViewHolder(nameTextView, delaytextView);
+                    dataItemView.setTag(R.id.viewHolder, viewHolder);
+                    dataItemView.setTag(R.id.moreInfo, "lorem ipsum dolor " + position);
+                }
 
                 DataItem dataItemToShow = adapter.getItem(position);
-                TextView nameTextView = (TextView) dataItemView.findViewById(R.id.item_name);
-                TextView delaytextView = (TextView) dataItemView.findViewById(R.id.item_delay);
 
-                nameTextView.setText(dataItemToShow.getName());
-                delaytextView.setText(String.valueOf(dataItemToShow.getDelay()));
+                viewHolder.itemNameText.setText(dataItemToShow.getName());
+                viewHolder.itemDelayText.setText(String.valueOf(dataItemToShow.getDelay()));
 
                 return dataItemView;
             }
