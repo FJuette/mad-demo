@@ -1,12 +1,14 @@
 package f.juette.mad.model;
 
+import com.google.gson.annotations.Expose;
+
 import java.io.Serializable;
 
 public class DataItem implements Serializable {
 
     private long id;
     private String name;
-    private long delay;
+    private transient long delay;
 
     public DataItem() {
 

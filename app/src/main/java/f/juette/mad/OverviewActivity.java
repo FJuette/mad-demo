@@ -27,6 +27,7 @@ import java.util.List;
 
 import f.juette.mad.model.DataItem;
 import f.juette.mad.model.IDataItemCRUDOperations;
+import f.juette.mad.model.impl.RemoteDataItemCRUDOperationsImpl;
 import f.juette.mad.model.impl.SQLiteDataItemCRUDOperationsImpl;
 
 public class OverviewActivity extends AppCompatActivity {
@@ -117,7 +118,8 @@ public class OverviewActivity extends AppCompatActivity {
 
         registerForContextMenu(listview);
 
-        crudops = new SQLiteDataItemCRUDOperationsImpl(this);
+        // crudops = new SQLiteDataItemCRUDOperationsImpl(this);
+        crudops = new RemoteDataItemCRUDOperationsImpl();
 
         // Set values/content on elements
         welcomeText.setText(R.string.welcome2);
@@ -299,16 +301,31 @@ public class OverviewActivity extends AppCompatActivity {
     }
 
     private void deleteDataItemAndUpdateListview(DataItem itemToDelete) {
-        // remove the item from the database
-        if (crudops.deleteDataItem(itemToDelete.getId())) {
-            // Remove the item from the listview
-            // adapter.remove(itemToDelete);
-            dataItemObjects.remove(itemToDelete);
-            adapter.notifyDataSetChanged();
-        } else {
-            Toast.makeText(OverviewActivity.this,
-                    "Could not delete: " + itemToDelete.getName(),
-                    Toast.LENGTH_SHORT).show();
-        }
+        new AsyncTask<DataItem, Void, Boolean>() {
+
+            @Override
+            protected void onPreExecute() {
+                progressDialog.show();
+            }
+
+            @Override
+            protected Boolean doInBackground(DataItem... params) {
+                // remove the item from the database
+                return crudops.deleteDataItem(params[0].getId());
+            }
+
+            @Override
+            protected void onPostExecute(Boolean result) {
+                if (result) {
+                    dataItemObjects.remove(itemToDelete);
+                    adapter.notifyDataSetChanged();
+                } else {
+                    Toast.makeText(OverviewActivity.this,
+                            "Could not delete: " + itemToDelete.getName(),
+                            Toast.LENGTH_SHORT).show();
+                }
+                progressDialog.hide();
+            }
+        }.execute(itemToDelete);
     }
 }
