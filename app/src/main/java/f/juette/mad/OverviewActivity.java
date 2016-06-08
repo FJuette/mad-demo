@@ -104,13 +104,13 @@ public class OverviewActivity extends AppCompatActivity {
                 return dataItemView;
             }
         };
-        ((ListView)listview).setAdapter(adapter);
+        ((ListView) listview).setAdapter(adapter);
 
         // Actions with the elements
         callDetailviewButton.setOnClickListener(v -> createNewItem());
         selectContactButton.setOnClickListener(v -> selectContact());
 
-        ((ListView)listview).setOnItemClickListener((parent, view, position, id) -> {
+        ((ListView) listview).setOnItemClickListener((parent, view, position, id) -> {
             DataItem selectedItem = adapter.getItem(position);
             // Toast.makeText(OverviewActivity.this, "selectedItem: " + selectedItem.getName(), Toast.LENGTH_SHORT).show();
             showItemDetails(selectedItem);
@@ -195,8 +195,7 @@ public class OverviewActivity extends AppCompatActivity {
             DataItem newItem = new DataItem(itemname, calldelay);
             createAndShowNewDataItem(newItem);
 
-        }
-        else if (requestCode == 1) {
+        } else if (requestCode == 1) {
             Log.i("OverviewActivity", "contact pick intent: " + data);
         }
 
@@ -277,8 +276,7 @@ public class OverviewActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.newItemAction) {
             createNewItem();
-        }
-        else if (item.getItemId() == R.id.addContactAction) {
+        } else if (item.getItemId() == R.id.addContactAction) {
             selectContact();
         }
         return true;
@@ -287,13 +285,12 @@ public class OverviewActivity extends AppCompatActivity {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
 
-        DataItem selectedItem = adapter.getItem(((AdapterView.AdapterContextMenuInfo)item.getMenuInfo()).position);
+        DataItem selectedItem = adapter.getItem(((AdapterView.AdapterContextMenuInfo) item.getMenuInfo()).position);
 
         if (item.getItemId() == R.id.deleteItemAction) {
             // Toast.makeText(OverviewActivity.this, "delete: " + selectedItem.getName(), Toast.LENGTH_SHORT).show();
             deleteDataItemAndUpdateListview(selectedItem);
-        }
-        else if (item.getItemId() == R.id.editItemAction) {
+        } else if (item.getItemId() == R.id.editItemAction) {
             // Toast.makeText(OverviewActivity.this, "edit: " + selectedItem.getName(), Toast.LENGTH_SHORT).show();
             showItemDetails(selectedItem);
         }
@@ -301,7 +298,7 @@ public class OverviewActivity extends AppCompatActivity {
     }
 
     private void deleteDataItemAndUpdateListview(DataItem itemToDelete) {
-        new AsyncTask<DataItem, Void, Boolean>() {
+        new AsyncTask<DataItem, Void, DataItem>() {
 
             @Override
             protected void onPreExecute() {
@@ -309,15 +306,19 @@ public class OverviewActivity extends AppCompatActivity {
             }
 
             @Override
-            protected Boolean doInBackground(DataItem... params) {
+            protected DataItem doInBackground(DataItem... params) {
                 // remove the item from the database
-                return crudops.deleteDataItem(params[0].getId());
+                DataItem toDelte = params[0];
+                if (crudops.deleteDataItem(toDelte.getId())) {
+                    return toDelte;
+                }
+                return null;
             }
 
             @Override
-            protected void onPostExecute(Boolean result) {
-                if (result) {
-                    dataItemObjects.remove(itemToDelete);
+            protected void onPostExecute(DataItem item) {
+                if (item != null) {
+                    dataItemObjects.remove(item);
                     adapter.notifyDataSetChanged();
                 } else {
                     Toast.makeText(OverviewActivity.this,

@@ -1,6 +1,6 @@
 package f.juette.mad.model;
 
-import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
@@ -8,7 +8,9 @@ public class DataItem implements Serializable {
 
     private long id;
     private String name;
-    private transient long delay;
+
+    @SerializedName("expiry")
+    private long delay;
 
     public DataItem() {
 

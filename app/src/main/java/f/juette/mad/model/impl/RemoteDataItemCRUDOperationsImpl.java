@@ -1,5 +1,7 @@
 package f.juette.mad.model.impl;
 
+import android.util.Log;
+
 import java.util.List;
 
 import f.juette.mad.model.DataItem;
@@ -20,6 +22,7 @@ public class RemoteDataItemCRUDOperationsImpl implements IDataItemCRUDOperations
 
     @Override
     public DataItem createDataItem(DataItem item) {
+        Log.i("CRUD", "Delay: " + item.getDelay());
         return restapi.createItem(item);
     }
 
@@ -31,5 +34,9 @@ public class RemoteDataItemCRUDOperationsImpl implements IDataItemCRUDOperations
     @Override
     public boolean deleteDataItem(long id) {
         return restapi.deleteItem(id);
+    }
+
+    public DataItem updateItem(DataItem item) {
+        return restapi.updateItem(item.getId(), item);
     }
 }
