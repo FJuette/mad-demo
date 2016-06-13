@@ -157,6 +157,10 @@ public class OverviewActivity extends AppCompatActivity {
 
     }
 
+    private static final int CALL_DETAIL_FOR_NEW_ITEM = 0;
+    private static final int CALL_DETAIL_FOR_EXISTING_ITEM = 1;
+    private static final int CALL_PICK_CONTACTS = 2;
+
     private void createNewItem() {
         // Toast.makeText(OverviewActivity.this, "OnClick on Call!", Toast.LENGTH_SHORT).show();
         long calltime = System.currentTimeMillis();
@@ -168,7 +172,7 @@ public class OverviewActivity extends AppCompatActivity {
         callDetailviewIntent.putExtra("calltime", calltime);
 
         // Open the DetailviewActivity
-        startActivityForResult(callDetailviewIntent, 0);
+        startActivityForResult(callDetailviewIntent, CALL_DETAIL_FOR_NEW_ITEM);
     }
 
     private void showItemDetails(DataItem item) {
@@ -176,29 +180,52 @@ public class OverviewActivity extends AppCompatActivity {
         Intent callDetailviewIntent = new Intent(this, DetailviewActivity.class);
         callDetailviewIntent.putExtra("editDataItem", item);
 
-        startActivityForResult(callDetailviewIntent, 1);
+        startActivityForResult(callDetailviewIntent, CALL_DETAIL_FOR_EXISTING_ITEM);
     }
 
     private void selectContact() {
         Intent selectContactIntent = new Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
-        startActivityForResult(selectContactIntent, 1);
+        startActivityForResult(selectContactIntent, CALL_PICK_CONTACTS);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 0 && resultCode == Activity.RESULT_OK) {
+        if (requestCode == CALL_DETAIL_FOR_NEW_ITEM && resultCode == Activity.RESULT_OK) {
             // Return value from the DetailviewActivity
-            long calldelay = data.getLongExtra("calldelay", -1);
-            String itemname = data.getStringExtra("itemname");
+            // long calldelay = data.getLongExtra("calldelay", -1);
+            // String itemname = data.getStringExtra("itemname");
 
-            DataItem newItem = new DataItem(itemname, calldelay);
+            DataItem newItem = (DataItem) data.getSerializableExtra("dataItem");
             createAndShowNewDataItem(newItem);
 
-        } else if (requestCode == 1) {
-            Log.i("OverviewActivity", "contact pick intent: " + data);
+        } else if (requestCode == CALL_DETAIL_FOR_EXISTING_ITEM && resultCode == Activity.RESULT_OK) {
+            Log.i("OverviewActivity", "got back from detailview with ok" + data);
+
+            DataItem updatedItem = (DataItem) data.getSerializableExtra("dataItem");
+            // createAndShowNewDataItem(newItem);
+            if (updatedItem != null) {
+                updateAndShowDataItem(updatedItem);
+            }
+            // Toast.makeText(this, "updatedItem; " + updatedItem, Toast.LENGTH_SHORT).show();
         }
 
+        else if (requestCode == CALL_PICK_CONTACTS) {
+            Log.i("OverviewActivity", "contact pick intent: " + data);
+        }
+    }
+
+    private void updateAndShowDataItem(DataItem updatedItem) {
+
+        // delete updated element from the list and add it again
+        for (int i = 0; i < dataItemObjects.size(); i++) {
+            if (dataItemObjects.get(i).getId() == updatedItem.getId()) {
+                dataItemObjects.remove(i);
+                dataItemObjects.add(i, updatedItem);
+                adapter.notifyDataSetChanged();
+                break;
+            }
+        }
     }
 
     private void createAndShowNewDataItem(final DataItem item) {

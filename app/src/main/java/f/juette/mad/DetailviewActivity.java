@@ -20,6 +20,9 @@ public class DetailviewActivity extends AppCompatActivity {
     private EditText itemNameText;
     private MenuItem saveItemMenuButton;
 
+    private DataItem itemToShow;
+    private boolean isEditItem;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,14 +48,18 @@ public class DetailviewActivity extends AppCompatActivity {
         long calltime = getIntent().getLongExtra("calltime", -1);
         Log.i("DetailviewActivity", "calltime: " + calltime);
 
-        DataItem itemToEdit = (DataItem) getIntent().getSerializableExtra("editDataItem");
-        if (itemToEdit != null) {
-            itemNameText.setText(itemToEdit.getName());
+        itemToShow = (DataItem) getIntent().getSerializableExtra("editDataItem");
+        if (itemToShow != null) {
+            isEditItem = true;
+            itemNameText.setText(itemToShow.getName());
+        } else {
+            itemToShow = new DataItem();
         }
 
         calldelay = System.currentTimeMillis() - calltime;
     }
 
+    // Input validation
     private void handleItemNameInputCompleted() {
         String itemName = itemNameText.getText().toString();
         if (itemName.equals("lorem")) {
@@ -68,14 +75,29 @@ public class DetailviewActivity extends AppCompatActivity {
     private void callbackCaller() {
         // Log.i("DetailviewActivity", "callback: " + calldelay);
         Intent returnIntent = new Intent();
-        returnIntent.putExtra("calldelay", calldelay);
-        returnIntent.putExtra("itemname", itemNameText.getText().toString());
+
+        if (!isEditItem) {
+            itemToShow.setDelay(calldelay);
+        }
+
+        if (attributesChanged()) {
+            itemToShow.setDelay(calldelay);
+            itemToShow.setName(itemNameText.getText().toString());
+
+            returnIntent.putExtra("dataItem", itemToShow);
+        }
+        // returnIntent.putExtra("calldelay", calldelay);
+        // returnIntent.putExtra("itemname", itemNameText.getText().toString());
 
         // Data back to the Overview activity
         setResult(Activity.RESULT_OK, returnIntent);
 
         // closing the activity
         finish();
+    }
+
+    private boolean attributesChanged() {
+        return !(itemNameText.getText().toString().equals(itemToShow.getName()));
     }
 
     @Override
