@@ -36,7 +36,8 @@ public class RemoteDataItemCRUDOperationsImpl implements IDataItemCRUDOperations
         return restapi.deleteItem(id);
     }
 
-    public DataItem updateItem(DataItem item) {
+    @Override
+    public DataItem updateDataItem(DataItem item) {
         return restapi.updateItem(item.getId(), item);
     }
 }

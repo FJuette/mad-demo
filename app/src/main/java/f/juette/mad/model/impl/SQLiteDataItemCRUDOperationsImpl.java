@@ -119,22 +119,31 @@ public class SQLiteDataItemCRUDOperationsImpl implements IDataItemCRUDOperations
 //		return null;
 //	}
 
-//	@Override
-//	public DataItem updateDataItem(DataItem item) {
-//		Log.i(logger, "updateDataItem(): " + item);
-//
-//		/* as in create, create the content values object from the item */
-//
-//		/*
-//		 * then update the item in the db using the prepared statement for the
-//		 * where clause and passing the id of the item as a string
-//		 * we get the number of updated rows as a return value
-//		 */
-//
-//		/* and return the item */
-//		return item;
-//	}
-//
+	@Override
+	public DataItem updateDataItem(DataItem item) {
+		Log.i(logger, "updateDataItem(): " + item);
+
+		/* as in create, create the content values object from the item */
+        ContentValues values = new ContentValues();
+        values.put(COL_NAME, item.getName());
+        values.put(COL_DELAY, item.getDelay());
+
+
+		/*
+		 * then update the item in the db using the prepared statement for the
+		 * where clause and passing the id of the item as a string
+		 * we get the number of updated rows as a return value
+		 */
+        int numOfRows = db.update(TABNAME, values, WHERE_IDENTIFY_ITEM, new String[] { String.valueOf(item.getId()) });
+
+        if (numOfRows > 0) {
+            return item;
+        }
+        else {
+            return null;
+        }
+	}
+
 	@Override
 	public boolean deleteDataItem(long id) {
 		Log.i(logger, "deleteDataItem(): " + id);

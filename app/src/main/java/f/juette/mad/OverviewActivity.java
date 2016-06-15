@@ -16,6 +16,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,10 +49,12 @@ public class OverviewActivity extends AppCompatActivity {
     private static class DataItemViewHolder {
         public TextView itemNameText;
         public TextView itemDelayText;
+        public CheckBox itemDoneCheckbox;
 
-        public DataItemViewHolder(TextView itemNameText, TextView itemDelayText) {
+        public DataItemViewHolder(TextView itemNameText, TextView itemDelayText, CheckBox itemDoneCheckbox) {
             this.itemNameText = itemNameText;
             this.itemDelayText = itemDelayText;
+            this.itemDoneCheckbox = itemDoneCheckbox;
         }
     }
 
@@ -77,21 +81,22 @@ public class OverviewActivity extends AppCompatActivity {
 
                 // Reuse the view object
                 if (dataItemView != null) {
-                    Log.i("OverviewActivity", "got existing view for item at position " + position + ": " + dataItemView);
+                    // Log.i("OverviewActivity", "got existing view for item at position " + position + ": " + dataItemView);
                     viewHolder = (DataItemViewHolder) dataItemView.getTag(R.id.viewHolder);
                     String moreInfo = (String) dataItemView.getTag(R.id.moreInfo);
-                    Log.i("OverviewActivity", "found view holder on view: " + viewHolder);
-                    Log.i("OverviewActivity", "found more info on view: " + moreInfo);
+                    // Log.i("OverviewActivity", "found view holder on view: " + viewHolder);
+                    // Log.i("OverviewActivity", "found more info on view: " + moreInfo);
                 } else {
-                    Log.i("OverviewActivity", "create view at position " + position);
+                    // Log.i("OverviewActivity", "create view at position " + position);
                     dataItemView = getLayoutInflater().inflate(
                             R.layout.overview_listitem_advanced,
                             parent, false);
 
                     TextView nameTextView = (TextView) dataItemView.findViewById(R.id.item_name);
                     TextView delaytextView = (TextView) dataItemView.findViewById(R.id.item_delay);
+                    CheckBox itemDoneCheckbox = (CheckBox) dataItemView.findViewById(R.id.item_done);
 
-                    viewHolder = new DataItemViewHolder(nameTextView, delaytextView);
+                    viewHolder = new DataItemViewHolder(nameTextView, delaytextView, itemDoneCheckbox);
                     dataItemView.setTag(R.id.viewHolder, viewHolder);
                     dataItemView.setTag(R.id.moreInfo, "lorem ipsum dolor " + position);
                 }
@@ -100,6 +105,16 @@ public class OverviewActivity extends AppCompatActivity {
 
                 viewHolder.itemNameText.setText(dataItemToShow.getName());
                 viewHolder.itemDelayText.setText(String.valueOf(dataItemToShow.getDelay()));
+
+                viewHolder.itemDoneCheckbox.setOnCheckedChangeListener(null);
+
+                viewHolder.itemDoneCheckbox.setChecked(dataItemToShow.isDone());
+
+                viewHolder.itemDoneCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                    // Toast.makeText(OverviewActivity.this, "Checked changed to: " + isChecked + " for item " + dataItemToShow, Toast.LENGTH_SHORT).show();
+                    dataItemToShow.setDone(isChecked);
+                    updateAndShowDataItem(dataItemToShow, false);
+                });
 
                 return dataItemView;
             }
@@ -205,7 +220,7 @@ public class OverviewActivity extends AppCompatActivity {
             DataItem updatedItem = (DataItem) data.getSerializableExtra("dataItem");
             // createAndShowNewDataItem(newItem);
             if (updatedItem != null) {
-                updateAndShowDataItem(updatedItem);
+                updateAndShowDataItem(updatedItem, true);
             }
             // Toast.makeText(this, "updatedItem; " + updatedItem, Toast.LENGTH_SHORT).show();
         }
@@ -215,8 +230,29 @@ public class OverviewActivity extends AppCompatActivity {
         }
     }
 
-    private void updateAndShowDataItem(DataItem updatedItem) {
+    private void updateAndShowDataItem(DataItem updatedItem, boolean updateListview) {
 
+        new AsyncTask<DataItem, Void, DataItem>() {
+            @Override
+            protected DataItem doInBackground(DataItem... params) {
+                return crudops.updateDataItem(params[0]);
+            }
+
+            @Override
+            protected void onPostExecute(DataItem item) {
+                if (item != null) {
+                    if (updateListview) {
+                        updateDataItemInListView(item);
+                    } else {
+                        Toast.makeText(OverviewActivity.this, "DataItem " + item.getName() + " has been successfully updated.", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+            }
+        }.execute(updatedItem);
+    }
+
+    private void updateDataItemInListView(DataItem updatedItem) {
         // delete updated element from the list and add it again
         for (int i = 0; i < dataItemObjects.size(); i++) {
             if (dataItemObjects.get(i).getId() == updatedItem.getId()) {

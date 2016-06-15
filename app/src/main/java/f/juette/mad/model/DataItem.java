@@ -9,6 +9,8 @@ public class DataItem implements Serializable {
     private long id;
     private String name;
 
+    private boolean done;
+
     @SerializedName("expiry")
     private long delay;
 
@@ -19,6 +21,14 @@ public class DataItem implements Serializable {
     public DataItem(String name, long delay) {
         this.name = name;
         this.delay = delay;
+    }
+
+    public boolean isDone() {
+        return done;
+    }
+
+    public void setDone(boolean done) {
+        this.done = done;
     }
 
     public long getId() {
